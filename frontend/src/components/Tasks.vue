@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <h3>Post List Screen</h3>
+    
 <div v-if="message" class="alert alert-success">{{ this.message }}
   </div>
     <div class="container">
@@ -36,17 +37,17 @@
       </table>
       <div class="row">
         <button class="btn btn-success" v-on:click="addTask()">Add</button>
-        <button v-on:click="downloadTask()">DownLoad</button>
-        <button v-on:click="uploadTask()">Upload</button>
-        
-            <input type="text" class="form-control" placeholder="Search by title" v-model="title"/>
-            <button class="btn btn-success" v-on:click="searchTask()">Search</button>
+        <button v-on:click="downloadTask()" class="btn btn-primary">DownLoad</button>
+        <button v-on:click="uploadTask()" class="btn btn-primary">Upload</button>
+      </div>
+      <div class="row"> 
+        <input type="text" class="form-control" placeholder="Search by title" v-model="search_data"/>
+        <button class="btn btn-primary" v-on:click="searchTask()">Search</button>
         
       </div>
     </div>
   </div>
 </template>
-
 
 <script>
 import TaskDataService from "../service/TaskDataService";
@@ -56,13 +57,17 @@ export default {
   data() {
     return {
       tasks: [],
+      name:"",
+      search_data:"",
       message: "",
     };
   },
+
   methods: {
     refreshTasks() {
       TaskDataService.retrieveAllTasks().then((res) => {
         this.tasks = res.data;
+
       });
     },
     addTask() {
@@ -77,9 +82,10 @@ export default {
       });
     },
     searchTask() {
-        TaskDataService.findByTitle(this.title)
+        TaskDataService.findBySearchData(this.search_data)
         .then(response => {
           this.tasks = response.data;
+          console.log(this.tasks)
         })
     },
     downloadTask() {
@@ -96,6 +102,14 @@ export default {
     uploadTask() {
       this.$router.push('/uploadPost');
     },
+    filterPosts() {
+      this.showList = this.tasks.filter((task) => {
+        return (
+          task.title.includes(this.keyword) ||
+          task.description.includes(this.keyword) 
+          );
+        });
+        },
   },
   
   created() {

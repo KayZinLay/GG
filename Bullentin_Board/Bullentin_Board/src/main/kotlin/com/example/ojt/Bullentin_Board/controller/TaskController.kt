@@ -1,9 +1,11 @@
 package com.example.ojt.Bullentin_Board.controller
 
+import com.example.ojt.Bullentin_Board.dto.Message
 import com.example.ojt.Bullentin_Board.dto.TaskRequest
 import com.example.ojt.Bullentin_Board.entity.Task
-import com.example.ojt.Bullentin_Board.entity.User
+import com.example.ojt.Bullentin_Board.helper.CSVHelper.hasCSVFormat
 import com.example.ojt.Bullentin_Board.repository.TaskRepository
+import com.example.ojt.Bullentin_Board.service.CsvService
 import com.example.ojt.Bullentin_Board.service.TaskService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.InputStreamResource
@@ -12,22 +14,22 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDateTime
 import javax.servlet.http.HttpServletResponse
+
 
 @RestController
 @RequestMapping("/api/v1")
 @CrossOrigin(origins = arrayOf("http://localhost:8080"))
-class TaskController(private val taskRepository: TaskRepository) {
+class TaskController(private val taskRepository: TaskRepository,private val csvService: CsvService) {
 
     @Autowired
     var taskService: TaskService? = null
 
     @GetMapping("/tasks")
-    fun getAllTaskList(@RequestParam(value="title", required = false, defaultValue = "") titleFilter: String,
-                       @RequestParam(value="description", required = false, defaultValue = "") descriptionFilter: String,) : List<Task> {
-        return taskRepository.findAll().filter {it.title.contains(titleFilter,true)
-            it.description.contains(descriptionFilter, true) }
+    fun getAllTaskList() : List<Task> {
+        return taskRepository.getAllTaskList()
     }
 
     /*
@@ -40,22 +42,17 @@ class TaskController(private val taskRepository: TaskRepository) {
         }.orElse(ResponseEntity.notFound().build())
     }
 
+    /*
+        save task
+     */
     @PostMapping("/save_task")
     fun saveTask(@RequestBody task: Task) : Task =
         taskRepository.save(task)
 
 
-//    fun updatePostById(@PathVariable(value = "id") id : Int,
-//                          @RequestBody newTask: Task): ResponseEntity<Task> {
-//
-////        return taskRepository.findById(id).map { existingTask ->
-////            val updatedTask: Task = existingTask
-////                .copy(title = newTask.title, description = newTask.description)
-////            ResponseEntity.ok().body(taskRepository.save(updatedTask))
-////        }.orElse(ResponseEntity.notFound().build())
-//
-//    }
-
+    /*
+        update task by id
+     */
     @PutMapping("/tasks/{id}")
     fun updateTaskById(@PathVariable("id") id: Int, @RequestBody request: TaskRequest): Task {
         val task = taskRepository.existsById(id)
@@ -70,6 +67,9 @@ class TaskController(private val taskRepository: TaskRepository) {
             )
     }
 
+    /*
+        delete task by id
+     */
     @DeleteMapping("/tasks/{id}")
     fun deleteUserById(@PathVariable(value = "id") id: Int):
             ResponseEntity<Void> {
@@ -80,6 +80,9 @@ class TaskController(private val taskRepository: TaskRepository) {
 
     }
 
+    /*
+        download the task csv file
+     */
     @GetMapping("/exportCSV")
     fun exportCSV(response: HttpServletResponse?):
             ResponseEntity<InputStreamResource> {
@@ -91,4 +94,36 @@ class TaskController(private val taskRepository: TaskRepository) {
         )
             .contentType(MediaType.parseMediaType("application/csv")).body(file)
     }
+
+    /*
+        upload Task CSV file
+     */
+    @PostMapping("/uploadCSV")
+    fun uploadCSVFile(@RequestParam("file") file: MultipartFile) : ResponseEntity<Message> {
+        var message = ""
+        try {
+            csvService.save(file)
+
+            message = "uploaded the file successfully:" + file.originalFilename;
+            return ResponseEntity.status(HttpStatus.OK).body(Message(message));
+
+        }catch(e: Exception){
+            message = "Could not upload the file" + file.originalFilename + "!"
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(Message(message))
+        }
+    }
+
+    /*
+        Search Task by title or description
+     */
+    @GetMapping("/search_tasks")
+    fun getTaskListBySearchData(
+        @RequestParam(value = "data", defaultValue = "") data: String,
+    ) : List<Task> {
+        println(data)
+        return taskRepository.searchByTask(data)
+    }
+
 }
+
+

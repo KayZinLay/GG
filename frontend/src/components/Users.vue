@@ -14,37 +14,39 @@
             <th>Phone</th>
             <th>Date of Birth</th>
             <th>Address</th>
-            <th>Created At</th>
-            <th>Updated At</th>
+            <th>Update</th>
             <th>Delete</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="user in users" v-bind:key="user.id">
           
-            <a v-bind:href="'/profile'"><td >{{ user.name }}</td></a>
+            <td >{{ user.name }}</td>
             <td>{{ user.email }}</td>
             <td>{{ user.name}}</td>
             <td>{{ user.phone }}</td>
             <td>{{ user.dob }}</td>
             <td>{{ user.address }}</td>
-            <td>{{ user.created_at }}</td>
-            <td>{{ user.updated_at }}</td>
             <td>
   <button class="btn btn-danger" v-on:click="deleteUser(user.id)">
                 Delete
               </button>
             </td>
             <td>
-  <!-- <button class="btn btn-danger" v-on:click="updateUser(user.id)">
+  <button class="btn btn-warning" v-on:click="updateUser(user.id)">
                 Update
-              </button> -->
+              </button>
             </td>
           </tr>
         </tbody>
       </table>
       <div class="row">
 <button class="btn btn-success" v-on:click="addUser()">Add</button>
+      </div>
+      <div class="row">
+        <input type="text" class="form-control" placeholder="Name" v-model="name"/>
+        <input type="text" class="form-control" placeholder="Email" v-model="email"/>
+        <button class="btn btn-primary" v-on:click="searchUser()">Search</button>
       </div>
     </div>
   </div>
@@ -59,8 +61,19 @@ export default {
   data() {
     return {
       users: [],
+      name: '',
+      email: '',
+      createFrom: '',
+      createTo: '',
       message: "",
+      search_data:"",
+      searchedUsers:"", 
+      searchQuery: "",
+      toISODate:""
     };
+  },
+  computed : {
+    
   },
   methods: {
     refreshUsers() {
@@ -71,14 +84,25 @@ export default {
     addUser() {
       this.$router.push(`/user/-1`);
     },
-    // updateUser(id) {
-    //   this.$router.push(`/user/${id}`);
-    // },
+    updateUser(id) {
+      this.$router.push(`/user/${id}`);
+    },
     deleteUser(id) {
       UserDataService.deleteUser(id).then(() => {
         this.refreshUsers();
       });
     },
+    searchUser() {
+       UserDataService.findBySearchData(
+         this.name,
+         this.email
+         )
+        .then(response => {
+          this.users = response.data;
+          console.log(this.users)
+        })
+    },
+    
   },
   created() {
     this.refreshUsers();

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3>User</h3>
+    <h3>User Create</h3>
     <div class="container">
       <form @submit="validateAndSubmit">
         <div v-if="errors.length">
@@ -127,7 +127,19 @@ export default {
           }).then(() => {
             this.$router.push("/users");
           });
-        } 
+        } else {
+           UserDataService.updateUser(this.id, {
+            id: this.id,
+            name: this.name,
+            email: this.email,
+            phone:this.phone,
+            address:this.address,
+            dob:this.dob,
+            profile_photo:this.profile_photo
+          }).then(() => {
+            this.$router.push("/tasks");
+          });
+        }
       }
     },
   },

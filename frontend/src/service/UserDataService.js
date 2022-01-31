@@ -27,7 +27,24 @@ class UserDataService {
     createUser(user) {
 
         return axios.post(`${USER_API_URL}/user_save`, user);
-    }   
+    }
+    
+    login(user) {
+
+        return axios.post(`${USER_API_URL}/login`, user);
+    }
+
+    findBySearchData(name,email) {
+        // return axios.get(`${USER_API_URL}/search_users?data=${name,email}`);
+
+         return axios
+                .get(`${USER_API_URL}/search_users`, {
+                    params: {
+                        'name': name,
+                        'email': email,
+                    }
+                })
+    }
 }
 
 export default new UserDataService()

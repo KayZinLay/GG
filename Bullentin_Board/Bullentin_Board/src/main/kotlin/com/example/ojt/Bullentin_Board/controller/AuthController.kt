@@ -13,7 +13,8 @@ import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletResponse
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
+@CrossOrigin(origins = arrayOf("http://localhost:8080"))
 class AuthController(private val userService: UserService, val response: HttpServletResponse) {
 
     @GetMapping("/hello")
@@ -23,6 +24,7 @@ class AuthController(private val userService: UserService, val response: HttpSer
 
     @PostMapping("/login")
     fun login(@RequestBody body: LoginDto): ResponseEntity<Any> {
+        println(body.email);
         val user = this.userService.findByEmail(body.email)
             ?: return ResponseEntity.badRequest().body(Message("user not found"))
 

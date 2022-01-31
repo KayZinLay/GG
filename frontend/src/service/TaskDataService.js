@@ -29,13 +29,19 @@ class PostDataService {
         return axios.post(`${USER_API_URL}/save_task`, task);
     }  
     
-    findByTitle(title) {
-        return axios.post(`${USER_API_URL}/tasks?title=${title}`);
+    findBySearchData(search_data) {
+
+        return axios.get(`${USER_API_URL}/search_tasks?data=${search_data}`);
     }
 
-    downloadTask() {
+    downloadTask(task) {
 
-        return axios.get(`${USER_API_URL}/exportCSV/`);
+        return axios.get(`${USER_API_URL}/exportCSV/`,task);
+    }
+
+    uploadTask(file) {
+
+        return axios.get(`${USER_API_URL}/uploadCSV/`,file);
     }
 }
 

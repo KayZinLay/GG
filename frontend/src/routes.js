@@ -8,8 +8,8 @@ const router = new Router({
     routes: [
         {
             path: "/",
-            name: "Tasks",
-            component: () => import("./components/Tasks"),
+            name: "login",
+            component: () => import("./components/login"),
         },
         {
             path: "/tasks",
@@ -27,14 +27,19 @@ const router = new Router({
             component: () => import("./components/User")
         },
         {
+            path: "/user/:id",
+            name: "User",
+            component: () => import("./components/User"),
+        },
+        {
             path: '/users',
             name: 'Users',
             
             component: () => import("./components/Users")
         },
         {
-            path: '/login',
-            name: "login",
+            path: '/logout',
+            name: "logout",
             component: () => import("./components/login")
         },
         {
@@ -43,11 +48,23 @@ const router = new Router({
             component: () => import("./components/upload_post")
         },
         {
-            path: '/profile',
-            name: "profile",
-            component: () => import("./components/profile")
+            path: '/nav',
+            name: "navigation",
+            component: () => import("./components/navigation")
         }
     ]
 });
+
+/**
+ * This is to handle and check authentication for routing.
+ */
+//  router.beforeEach((to, from, next) => {
+//     const loggedIn = store.getters.isLoggedIn;
+//     if (!loggedIn && to.name != "login") {
+//         return next("/login");
+//     }
+//     next();
+// });
+
 
 export default router;
