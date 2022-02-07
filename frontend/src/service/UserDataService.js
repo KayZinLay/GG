@@ -26,8 +26,8 @@ class UserDataService {
 
     createUser(user) {
 
-        return axios.post(`${USER_API_URL}/user_save`, user);
-    }
+        return axios.post(`${USER_API_URL}/save_user`, user);
+    }  
     
     login(user) {
 

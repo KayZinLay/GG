@@ -14,19 +14,20 @@ import java.io.IOException
 import java.io.InputStreamReader
 
 @Service
-class TaskService(private val taskRepository: TaskRepository) {
+interface TaskService {
 
-    fun fetchAll(): List<Task> {
-        return taskRepository!!.findAll()
-    }
+    fun fetchAll(): List<Task>
 
-    fun save(task: Task): Task {
-        return taskRepository.save(task)
-    }
+    fun save(task: Task): List<Task>
 
+    fun load(): ByteArrayInputStream
 
-    fun load(): ByteArrayInputStream {
-        val employees = fetchAll()
-        return CSVHelper.taskToCSV(employees)
-    }
+    fun getAllTaskList(): List<Task>
+
+    fun getTaskById(id: Int): Task
+
+    fun deleteById(id: Int)
+
+    fun searchByTask(data: String): List<Task>
+
 }

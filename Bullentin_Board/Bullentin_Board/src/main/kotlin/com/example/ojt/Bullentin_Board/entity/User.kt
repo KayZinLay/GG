@@ -2,56 +2,46 @@ package com.example.ojt.Bullentin_Board.entity
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import java.sql.Date
 import java.time.LocalDate
-import java.time.LocalDateTime
 import javax.persistence.*
+
 
 @Entity
 @Table(name = "users")
-class User(
+class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    var id: Int = 1,
+    var id : Long = 1
 
-    var name: String = "",
+    val name: String = " "
 
-    var email: String = "",
+    val email: String = " "
 
-    var password: String = "",
+    val phone: String = " "
 
-    var profile_photo: String = "",
+    val type: String = " "
 
-    @JsonFormat(pattern = "MM-dd-yyyy")
-    var dob: LocalDate,
+    val address: String = " "
 
-    var address: String = " ",
+    var password: String = ""
+        get() = field
+        set(value) {
+            val passwordEncoder = BCryptPasswordEncoder()
+            field = passwordEncoder.encode(value)
+        }
 
-    var phone: String = " ",
-
-    var type: String = " ",
-
-    var created_user_id: Int = 0,
-
-    var updated_user_id: Int = 0,
-
-    var deleted_user_id: Int = 0,
-
-    var created_at: LocalDateTime? = LocalDateTime.now(),
-
-    var updated_at: LocalDateTime? = LocalDateTime.now(),
-
-    var deleted_at: LocalDateTime? = LocalDateTime.now(),
-
-){
     fun comparePassword(password : String) : Boolean {
         return BCryptPasswordEncoder().matches(password, this.password)
     }
 
-//    get() = field
-//    set(value) {
-//        val passwordEncoder = BCryptPasswordEncoder()
-//        field = passwordEncoder.encode(value)
-//    }
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private val dob: LocalDate? = null
+
+    constructor(id : Long,name:String,email:String,password: String,address:String,phone:String,type:String)
+
 }
+
+
+
 

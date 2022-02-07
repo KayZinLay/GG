@@ -2,7 +2,6 @@ package com.example.ojt.Bullentin_Board.controller
 
 import com.example.ojt.Bullentin_Board.dto.LoginDto
 import com.example.ojt.Bullentin_Board.dto.Message
-import com.example.ojt.Bullentin_Board.entity.User
 import com.example.ojt.Bullentin_Board.service.UserService
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
@@ -57,7 +56,7 @@ class AuthController(private val userService: UserService, val response: HttpSer
 
             val body = Jwts.parser().setSigningKey("secret").parseClaimsJws(jwt).body
 
-            return ResponseEntity.ok(this.userService.getById(body.issuer.toInt()))
+            return ResponseEntity.ok(this.userService.getById(body.issuer.toLong()))
         }catch (e: Exception) {
             return ResponseEntity.status(401).body(Message("unauthenticated"))
         }

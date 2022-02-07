@@ -68,7 +68,7 @@ export default {
     goToUsers() {
       this.$router.push({path: "/users"});
     },
-    goToUses() {
+    goToUser() {
       this.$router.push({path: "/user/-1"});
     }
   },

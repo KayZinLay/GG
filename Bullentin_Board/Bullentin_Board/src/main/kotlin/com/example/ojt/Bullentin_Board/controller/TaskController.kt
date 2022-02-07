@@ -22,62 +22,53 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @RequestMapping("/api/v1")
 @CrossOrigin(origins = arrayOf("http://localhost:8080"))
-class TaskController(private val taskRepository: TaskRepository,private val csvService: CsvService) {
+class TaskController(private val csvService: CsvService) {
 
     @Autowired
     var taskService: TaskService? = null
 
     @GetMapping("/tasks")
     fun getAllTaskList() : List<Task> {
-        return taskRepository.getAllTaskList()
+        return taskService!!.getAllTaskList()
     }
 
     /*
-       Search Task By Id
+     Search Task By Id
     */
     @GetMapping("/tasks/{id}")
-    fun retrieveTask(@PathVariable(value = "id") id: Int): ResponseEntity<Task> {
-        return taskRepository.findById(id).map { task ->
-            ResponseEntity.ok(task)
-        }.orElse(ResponseEntity.notFound().build())
+    fun retrieveTask(@PathVariable(value = "id") id: Int):
+            Task {
+        return taskService!!.getTaskById(id)
     }
 
     /*
         save task
      */
     @PostMapping("/save_task")
-    fun saveTask(@RequestBody task: Task) : Task =
-        taskRepository.save(task)
-
+    fun saveTask(@RequestBody task: Task) : List<Task> =
+        taskService!!.save(task)
 
     /*
         update task by id
      */
     @PutMapping("/tasks/{id}")
-    fun updateTaskById(@PathVariable("id") id: Int, @RequestBody request: TaskRequest): Task {
-        val task = taskRepository.existsById(id)
-        return taskRepository.save(
+    fun updateUserById(@PathVariable("id") id: Int, @RequestBody request: TaskRequest): List<Task> {
+        return taskService!!.save(
                 Task(
                     id = id,
                     title = request.title,
                     description = request.description,
-                    updated_user_id = request.updated_user_id,
                     updated_at = LocalDateTime.now()
                 )
-            )
+        )
     }
 
     /*
         delete task by id
      */
     @DeleteMapping("/tasks/{id}")
-    fun deleteUserById(@PathVariable(value = "id") id: Int):
-            ResponseEntity<Void> {
-        return taskRepository.findById(id).map { task ->
-            taskRepository.delete(task)
-            ResponseEntity<Void>(HttpStatus.OK)
-        }.orElse(ResponseEntity.notFound().build())
-
+    fun deleteTaskById(@PathVariable("id") id: Int) {
+        return taskService!!.deleteById(id)
     }
 
     /*
@@ -100,6 +91,7 @@ class TaskController(private val taskRepository: TaskRepository,private val csvS
      */
     @PostMapping("/uploadCSV")
     fun uploadCSVFile(@RequestParam("file") file: MultipartFile) : ResponseEntity<Message> {
+        println("file"+file)
         var message = ""
         try {
             csvService.save(file)
@@ -120,8 +112,7 @@ class TaskController(private val taskRepository: TaskRepository,private val csvS
     fun getTaskListBySearchData(
         @RequestParam(value = "data", defaultValue = "") data: String,
     ) : List<Task> {
-        println(data)
-        return taskRepository.searchByTask(data)
+        return taskService!!.searchByTask(data)
     }
 
 }

@@ -41,7 +41,7 @@ class PostDataService {
 
     uploadTask(file) {
 
-        return axios.get(`${USER_API_URL}/uploadCSV/`,file);
+        return axios.post(`${USER_API_URL}/uploadCSV/`,file);
     }
 }
 

@@ -21,6 +21,7 @@
       <input type="text" class="form-control" v-model="description" />
         </fieldset>
         <button class="btn btn-success" type="submit">Save</button>
+        <button class="btn btn-secondary" type="submit" @click="clear()">Clear</button>
       </form>
     </div>
   </div>
@@ -78,6 +79,10 @@ export default {
         }
       }
     },
+    clear() {
+      this.title = '',
+      this.description = ''
+    }
   },
   created() {
     this.refreshTaskDetails();

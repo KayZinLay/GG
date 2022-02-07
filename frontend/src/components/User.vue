@@ -18,16 +18,16 @@
         </fieldset>
         <fieldset class="form-group">
           <label>Email</label>
-      <input type="text" class="form-control" v-model="email" />
+      <input type="email" v-model="email" class="form-control" required />
         </fieldset>
         <fieldset class="form-group">
           <label>Password</label>
           
-       <input type="password" class="form-control" v-model="password" v-validate="'required|min:6|max:35|confirmed'" ref="password"/>
+       <input type="password" class="form-control" v-model="password" />
         </fieldset>
              <fieldset class="form-group">
           <label>Confirm Password</label>
-       <input type="password" class="form-control" v-model="confirm_password" v-bind:rules="Required" />
+       <input type="password" class="form-control" v-model="confirm_password" />
         </fieldset>
         <fieldset class="form-group">
           <label>Phone</label>
@@ -49,12 +49,8 @@
           <label>Date of Birth</label>
        <input type="date" class="form-control" v-model="dob" />
         </fieldset>
-         <fieldset class="form-group">
-          <label>Profile</label>
-       <input type="file" class="form-control" >
-        </fieldset>
         <button class="btn btn-success" type="submit">Save</button>
-        <button class="btn btn-back" type="submit">Back</button>
+        <button class="btn btn-secondary" type="submit" @click="clear()">Clear</button>
       </form>
     </div>
   </div>
@@ -70,17 +66,11 @@ export default {
       email: "",
       password: "",
       confirm_password:"",
-      profile_photo:"",
-      dob:"",
+      dob: '2017-07-04',
       address:"",
       phone:"",
       type:"",
       errors: [],
-
-      Required: [
-         value => !!value || "The password field is required.",
-      ],
-       
     };
     
   },
@@ -90,9 +80,6 @@ export default {
     },
   },
   methods: {
-      onChange(event) {
-        this.profile_photo = event.target.files[0]
-    },
     refreshUserDetails() {
       UserDataService.retrieveUser(this.id).then((res) => {
         this.name = res.data.name;
@@ -100,20 +87,41 @@ export default {
         this.address = res.data.address;
         this.phone = res.data.phone;
         this.dob = res.data.dob;
-        this.created_at = res.data.created_at;
-        this.updated_at = res.data.updated_at;
       });
     },
-    validateAndSubmit(e) {
+      validateAndSubmit(e) {
       e.preventDefault();
       this.errors = [];
       if (!this.name) {
         this.errors.push("Enter Name");
       } 
       if (!this.email) {
+       
         this.errors.push("Enter Email");
       } 
+      if (!this.type) {
+        this.errors.push("Select Type");
+      }
+      if (!this.password) {
+        this.errors.push("Enter Password");
+      }
+      if (!this.confirm_password) {
+        this.errors.push("Enter Confirm Password");
+      }
+      if ( this.password != this.confirm_password) {
+        this.errors.push("Password and Confirm Password must be same")
+      }
+      if (!this.address) {
+        this.errors.push("Enter Address");
+      }
+      if (!this.phone) {
+        this.errors.push("Enter Phone");
+      }
+      if (!this.dob) {
+        this.errors.push("Enter Date of Birth");
+      }
       if (this.errors.length === 0) {
+        
         if (this.id == -1) {
           UserDataService.createUser({
             name: this.name,
@@ -123,7 +131,6 @@ export default {
             phone:this.phone,
             type:this.type,
             dob:this.dob,
-            profile_photo:this.profile_photo
           }).then(() => {
             this.$router.push("/users");
           });
@@ -134,13 +141,25 @@ export default {
             email: this.email,
             phone:this.phone,
             address:this.address,
+            password:this.password,
+            type:this.type,
             dob:this.dob,
-            profile_photo:this.profile_photo
           }).then(() => {
-            this.$router.push("/tasks");
+            this.$router.push("/users");
           });
         }
       }
+    },
+    clear() {
+      this.name = ''
+      this.email = ''
+      this.password = ''
+      this.confirm_password = ''
+      this.type = ''
+      this.phone = ''
+      this.address = ''
+      this.dob = ''
+
     },
   },
   created() {

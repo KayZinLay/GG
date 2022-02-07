@@ -13,7 +13,7 @@ import java.util.*
 
 object CSVHelper {
     fun taskToCSV(tasks: List<Task>): ByteArrayInputStream {
-        val format = CSVFormat.DEFAULT.withHeader("ID", "Post Title", "Post Description",
+        val format = CSVFormat.DEFAULT.withHeader( "Post Title", "Post Description",
             "Posted User", "Posted Date")
         try {
             ByteArrayOutputStream().use({ out ->
@@ -23,8 +23,7 @@ object CSVHelper {
                 ).use { csvPrinter ->
                     for (task in tasks) {
                         val data: List<String?> = Arrays.asList(
-                            task.id.toString(),
-                            task.title, task.description,java.lang.String.valueOf(task.create_user_id),
+                            task.id.toString(),task.title, task.description,java.lang.String.valueOf(task.create_user_id),
                             java.lang.String.valueOf(task.created_at)
                         )
                         csvPrinter.printRecord(data)
@@ -58,19 +57,9 @@ object CSVHelper {
                             csvRecord["Id"].toInt(),
                             csvRecord["Post Title"],
                             csvRecord["Post Description"],
-                            csvRecord["Posted User"].toInt(),
-                            csvRecord["Posted Date"]
+//                            csvRecord["Posted User"].toInt()
+//                            csvRecord["Posted Date"]
                         )
-
-//                    for (csvRecord in csvRecords) {
-//                        val developerTutorial = Task(
-//                            csvRecord["Id"].toInt(),
-//                            csvRecord["Title"],
-//                            csvRecord["Description"],
-//                            csvRecord["user_create_id"].toInt(),
-//                            csvRecord["created_at"].toInt()
-//
-//                        )
                         tasks.add(task)
                     }
                     return tasks

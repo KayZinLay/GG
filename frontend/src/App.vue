@@ -1,7 +1,6 @@
 <template>
   <div id="app">
     <navigation /> 
-    <login />
     <router-view />
   </div>
 </template>
